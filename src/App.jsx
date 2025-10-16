@@ -73,7 +73,16 @@ function App() {
         <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center">
           <span className="text-muted">© 2025 Mimo Finanças</span>
           <span className="text-muted">V0.1</span>
-          <span className="text-muted">Desenvolvido pelo Mimo</span>
+          <span className="text-muted">
+            Desenvolvido por{" "}
+            <a
+              href="https://github.com/MauricioSts"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Mauricio
+            </a>
+          </span>
         </div>
       </footer>
     </div>
