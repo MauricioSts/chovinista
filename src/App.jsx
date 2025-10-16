@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import SaldoAtual from "./components/saldoAtual";
+import SaldoAtual from "./components/MoneyAtual";
+
 import SaldoAnterior from "./components/SaldoAnterior";
 import HistoricoDeValores from "./components/Historico";
 import chovirico from "./assets/chovirico.png";
