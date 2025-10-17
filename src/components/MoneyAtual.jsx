@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 function SaldoAtual({
   saldoAtual,
@@ -9,6 +10,8 @@ function SaldoAtual({
   setDataAtual,
   setDataAnterior,
   setHistorico,
+  mostrar,
+  setMostrar,
 }) {
   const [novoValor, setNovoValor] = useState("");
 
@@ -31,6 +34,9 @@ function SaldoAtual({
     setNovoValor("");
   }
 
+  const alternarVisibilidade = () => {
+    setMostrar(!mostrar);
+  };
   const crescimento = saldoAnterior
     ? (((saldoAtual - saldoAnterior) / saldoAnterior) * 100).toFixed(2)
     : "0.00";
@@ -40,12 +46,22 @@ function SaldoAtual({
   return (
     <div className="card shadow-sm">
       <div className="card-body">
-        <h5 className="card-title">Saldo Atual</h5>
-        <h2 className="text-primary">{saldoAtual.toFixed(2)} R$</h2>
+        <h5 className="card-title">
+          Saldo Atual{" "}
+          <button className="btn btn-primary" onClick={alternarVisibilidade}>
+            {mostrar ? <Eye size={20} /> : <EyeOff size={20} />}
+          </button>
+        </h5>
+        {mostrar && (
+          <h2 className="text-primary">{saldoAtual.toFixed(2)} R$</h2>
+        )}
+
         <p className="mb-1">Última atualização: {dataAtual}</p>
-        <p className="mb-3">
-          {cresceu} {Math.abs(crescimento)}% em relação ao valor anterior
-        </p>
+        {mostrar && (
+          <p className="mb-3">
+            {cresceu} {Math.abs(crescimento)}% em relação ao valor anterior
+          </p>
+        )}
 
         <div className="input-group mb-3">
           <input
@@ -60,7 +76,6 @@ function SaldoAtual({
           </button>
         </div>
       </div>
-     
     </div>
   );
 }

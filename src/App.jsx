@@ -24,6 +24,7 @@ function App() {
     const stored = localStorage.getItem("historico");
     return stored ? JSON.parse(stored) : [];
   });
+  const [mostrar, setMostrar] = useState(true);
 
   // Atualizar localStorage sempre que os estados mudarem
   useEffect(() => {
@@ -58,17 +59,20 @@ function App() {
             setDataAtual={setDataAtual}
             setDataAnterior={setDataAnterior}
             setHistorico={setHistorico}
+            mostrar={mostrar}
+            setMostrar={setMostrar}
           />
         </div>
         <div className="col-md-6 mb-3">
           <SaldoAnterior
             saldoAnterior={saldoAnterior}
             dataAnterior={dataAnterior}
+            mostrar={mostrar}
           />
         </div>
       </div>
 
-      <HistoricoDeValores historico={historico} />
+      <HistoricoDeValores historico={historico} mostrar={mostrar} />
       <footer className="mt-4 py-3 border-top bg-light text-center">
         <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center">
           <span className="text-muted">© 2025 Mimo Finanças</span>

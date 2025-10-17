@@ -1,4 +1,4 @@
-function HistoricoDeValores({ historico }) {
+function HistoricoDeValores({ historico, mostrar }) {
   return (
     <div className="card mt-4 shadow-sm">
       <div className="card-body">
@@ -15,20 +15,22 @@ function HistoricoDeValores({ historico }) {
                   <th>Data</th>
                 </tr>
               </thead>
-              <tbody>
-                {historico.map((item, index) => (
-                  <tr key={index}>
-                    <td
-                      className={
-                        item.valor >= 0 ? "text-success" : "text-danger"
-                      }
-                    >
-                      {item.valor.toFixed(2)}
-                    </td>
-                    <td>{item.data}</td>
-                  </tr>
-                ))}
-              </tbody>
+              {mostrar && (
+                <tbody>
+                  {historico.map((item, index) => (
+                    <tr key={index}>
+                      <td
+                        className={
+                          item.valor >= 0 ? "text-success" : "text-danger"
+                        }
+                      >
+                        {item.valor.toFixed(2)}
+                      </td>
+                      <td>{item.data}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              )}
             </table>
           </div>
         )}
