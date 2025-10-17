@@ -76,7 +76,7 @@ function App() {
       <footer className="mt-4 py-3 border-top bg-light text-center">
         <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center">
           <span className="text-muted">© 2025 Mimo Finanças</span>
-          <span className="text-muted">V0.1</span>
+          <span className="text-muted">V0.1.5</span>
           <span className="text-muted">
             Desenvolvido por{" "}
             <a
