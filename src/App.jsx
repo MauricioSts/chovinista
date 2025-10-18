@@ -39,7 +39,7 @@ function App() {
     <div className="container my-4">
       {/* Saudação + foto */}
       <div className="text-center mb-4">
-        <h1>Olá, Miminha!</h1>
+      <h1 style={{color:"#e91e63"} }><span style={{color: "#000"}}>Olá,</span> Miminha!</h1>
         <img
           src={chovirico} // Futuramente você colocará sua foto
           alt="Foto do usuário"
@@ -79,13 +79,17 @@ function App() {
           <span className="text-muted">V0.1.5</span>
           <span className="text-muted">
             Desenvolvido por{" "}
-            <a
-              href="https://github.com/MauricioSts"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Mauricio
-            </a>
+         <a
+  href="https://github.com/MauricioSts"
+  target="_blank"
+  rel="noopener noreferrer"
+  style={{
+    color: "#e91e63",
+    textDecoration: "none"
+  }}
+>
+  Mauricio
+</a>
           </span>
         </div>
       </footer>
