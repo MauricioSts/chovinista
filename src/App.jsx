@@ -173,7 +173,11 @@ function App() {
         </div>
       </div>
 
-      <HistoricoDeValores historico={historico} mostrar={mostrar} />
+      <HistoricoDeValores
+        historico={historico}
+        mostrar={mostrar}
+        saldoAtual={saldoAtual}
+      />
 
       <footer className="mt-4 py-3 border-top bg-light text-center">
         <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center">

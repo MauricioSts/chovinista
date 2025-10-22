@@ -31,7 +31,10 @@ function SaldoAtual({
     setDataAnterior(dataAtual);
     setDataAtual(novaData);
 
-    setHistorico((prev) => [{ valor: valorAntigo, data: dataAntiga }, ...prev]);
+    setHistorico((prev) => [
+      { valor: novoValorNumerico, data: novaData },
+      ...prev,
+    ]);
 
     setNovoValor("");
   }

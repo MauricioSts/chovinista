@@ -11,11 +11,15 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.8",
+    "chart.js": "^4.5.1",
     "firebase": "^12.4.0",
+    "framer-motion": "^12.23.24",
     "lucide-react": "^0.546.0",
     "react": "^19.1.1",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.1.1",
-    "react-hot-toast": "^2.6.0"
+    "react-hot-toast": "^2.6.0",
+    "recharts": "^3.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
