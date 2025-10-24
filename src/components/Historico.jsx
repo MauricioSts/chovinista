@@ -1,119 +1,170 @@
-import { motion } from "framer-motion";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  CartesianGrid,
-} from "recharts";
+import { motion, AnimatePresence } from "framer-motion";
 
-function HistoricoDeValores({ historico, mostrar }) {
-  if (!mostrar) return null;
-
+function HistoricoDeValores({ historico, mostrar, saldoAtual = 0 }) {
   // 🔹 Garante que o histórico está ordenado corretamente
   const dadosOrdenados = [...historico].sort(
     (a, b) => new Date(a.data) - new Date(b.data)
   );
 
   return (
-    <div className="card mt-4 shadow-sm">
-      <div className="card-body">
-        <motion.h5
-          className="card-title text-center mb-3"
-          initial={{ opacity: 0, y: -20 }}
+    <AnimatePresence>
+      {mostrar && (
+        <motion.div 
+          className="card mt-4 shadow-sm"
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          style={{ color: "#e91e63", fontWeight: "bold" }}
+          exit={{ opacity: 0, y: -30 }}
+          transition={{ duration: 0.5 }}
         >
-          📈 Histórico de Valores
-        </motion.h5>
+          <div className="card-body">
+            <motion.h5
+              className="card-title text-center mb-3"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              style={{ color: "var(--accent-color)", fontWeight: "bold" }}
+            >
+              📈 Histórico de Valores
+            </motion.h5>
 
-        {/* 🔹 Gráfico estilizado crescente */}
-        {historico.length > 0 ? (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="mb-4"
-            style={{ width: "100%", height: "420px" }}
-          >
-            <ResponsiveContainer>
-              <LineChart data={dadosOrdenados}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="data"
-                  tick={{ fontSize: 12 }}
-                  stroke="#555"
-                  tickMargin={8}
-                />
-                <YAxis
-                  tick={{ fontSize: 12 }}
-                  tickFormatter={(v) => `R$${v}`}
-                  stroke="#555"
-                  domain={[300, 1000]} // 🔹 Força o gráfico a começar em R$300 e ir até R$1000
-                  ticks={[300, 400, 500, 600, 700, 800, 900, 1000]} // valores exatos
-                />
-                <Tooltip
-                  formatter={(v) => `R$ ${v.toFixed(2)}`}
-                  labelFormatter={(label) => `Data: ${label}`}
-                />
-                <Line
-                  type="linear" // 🔹 Garante formato de reta (como na imagem)
-                  dataKey="valor"
-                  stroke="#e91e63"
-                  strokeWidth={3}
-                  dot={{
-                    r: 5,
-                    fill: "#fff",
-                    stroke: "#e91e63",
-                    strokeWidth: 2,
+            {/* 🔹 Resumo simples */}
+            {historico.length > 0 && (
+              <div className="row mb-4">
+                <div className="col-12 col-md-6 mb-3">
+                  <div 
+                    className="card text-center"
+                    style={{
+                      background: "var(--card-bg)",
+                      color: "var(--text-primary)",
+                      borderRadius: "15px",
+                      border: "1px solid var(--border-color)"
+                    }}
+                  >
+                    <div className="card-body">
+                      <h5 style={{ margin: 0, fontSize: "14px", color: "var(--text-secondary)" }}>Saldo Atual</h5>
+                      <h3 style={{ margin: 0, fontWeight: "bold", color: "var(--accent-color)" }}>
+                        R$ {saldoAtual.toFixed(2)}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="col-12 col-md-6 mb-3">
+                  <div 
+                    className="card text-center"
+                    style={{
+                      background: "var(--card-bg)",
+                      color: "var(--text-primary)",
+                      borderRadius: "15px",
+                      border: "1px solid var(--border-color)"
+                    }}
+                  >
+                    <div className="card-body">
+                      <h5 style={{ margin: 0, fontSize: "14px", color: "var(--text-secondary)" }}>Total de Registros</h5>
+                      <h3 style={{ margin: 0, fontWeight: "bold", color: "var(--accent-color)" }}>
+                        {historico.length}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {historico.length === 0 && (
+              <motion.p 
+                className="text-center"
+                style={{ color: "var(--text-muted)" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+              >
+                Nenhum registro ainda.
+              </motion.p>
+            )}
+
+            {/* 🔹 Tabela dos valores */}
+            {historico.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="table-responsive"
+              >
+                <table 
+                  className="table table-bordered table-hover"
+                  style={{ 
+                    backgroundColor: "var(--card-bg) !important",
+                    color: "var(--text-primary) !important",
+                    borderColor: "var(--border-color) !important",
+                    boxShadow: "var(--shadow-lg)"
                   }}
-                  activeDot={{ r: 7 }}
-                  isAnimationActive={true}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </motion.div>
-        ) : (
-          <p className="text-center text-muted">Nenhum registro ainda.</p>
-        )}
-
-        {/* 🔹 Tabela dos valores */}
-        {historico.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="table-responsive"
-          >
-            <table className="table table-bordered table-striped table-hover">
-              <thead className="table-light">
-                <tr>
-                  <th>Valor (R$)</th>
-                  <th>Data</th>
-                </tr>
-              </thead>
-              <tbody>
-                {historico.map((item, index) => (
-                  <tr key={index}>
-                    <td
-                      className={
-                        item.valor >= 0 ? "text-success" : "text-danger"
-                      }
-                    >
-                      {item.valor.toFixed(2)}
-                    </td>
-                    <td>{item.data}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </motion.div>
-        )}
-      </div>
-    </div>
+                >
+                  <thead style={{ 
+                    backgroundColor: "var(--bg-tertiary) !important",
+                    borderColor: "var(--border-color) !important"
+                  }}>
+                    <tr>
+                      <th style={{ 
+                        color: "var(--text-primary) !important", 
+                        borderColor: "var(--border-color) !important",
+                        backgroundColor: "var(--bg-tertiary) !important",
+                        fontWeight: "bold",
+                        fontSize: "14px"
+                      }}>
+                        Valor (R$)
+                      </th>
+                      <th style={{ 
+                        color: "var(--text-primary) !important", 
+                        borderColor: "var(--border-color) !important",
+                        backgroundColor: "var(--bg-tertiary) !important",
+                        fontWeight: "bold",
+                        fontSize: "14px"
+                      }}>
+                        Data
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {historico.map((item, index) => (
+                      <motion.tr 
+                        key={index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1, duration: 0.3 }}
+                        style={{ 
+                          borderColor: "var(--border-color) !important",
+                          backgroundColor: `${index % 2 === 0 ? "var(--card-bg)" : "var(--bg-secondary)"} !important`
+                        }}
+                      >
+                        <td
+                          style={{
+                            color: `${item.valor >= 0 ? "var(--accent-color)" : "#ff6b6b"} !important`,
+                            borderColor: "var(--border-color) !important",
+                            backgroundColor: `${index % 2 === 0 ? "var(--card-bg)" : "var(--bg-secondary)"} !important`,
+                            fontWeight: "bold",
+                            fontSize: "14px"
+                          }}
+                        >
+                          {item.valor.toFixed(2)}
+                        </td>
+                        <td style={{ 
+                          borderColor: "var(--border-color) !important",
+                          color: "var(--text-primary) !important",
+                          backgroundColor: `${index % 2 === 0 ? "var(--card-bg)" : "var(--bg-secondary)"} !important`,
+                          fontSize: "14px"
+                        }}>
+                          {item.data}
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </motion.div>
+            )}
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 

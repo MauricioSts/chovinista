@@ -1,11 +1,16 @@
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import SaldoAtual from "./components/MoneyAtual";
 import SaldoAnterior from "./components/SaldoAnterior";
 import HistoricoDeValores from "./components/Historico";
+import Estatisticas from "./components/Estatisticas";
+import Tabs from "./components/Tabs";
+import ThemeToggle from "./components/ThemeToggle";
 import chovirico from "./assets/chovirico.png";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "./firebase/config";
 import { Toaster, toast } from "react-hot-toast";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 function App() {
   const [saldoAtual, setSaldoAtual] = useState(0);
@@ -15,6 +20,7 @@ function App() {
   const [historico, setHistorico] = useState([]);
   const [mostrar, setMostrar] = useState(true);
   const [carregando, setCarregando] = useState(true);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   // 🔹 Carregar dados do Firestore
   useEffect(() => {
@@ -81,122 +87,202 @@ function App() {
   // 🔹 Tela de carregamento personalizada (porquinho elástico)
   if (carregando) {
     return (
-      <div
-        className="d-flex flex-column align-items-center justify-content-center"
-        style={{
-          height: "100vh",
-          backgroundColor: "#fff",
-          overflow: "hidden",
-        }}
-      >
-        <img
-          src={chovirico}
-          alt="Porquinho carregando..."
+      <ThemeProvider>
+        <motion.div
+          className="d-flex flex-column align-items-center justify-content-center"
           style={{
-            width: "140px",
-            height: "140px",
-            borderRadius: "50%",
-            border: "4px solid #f8bbd0",
-            padding: "10px",
-            animation: "elasticSpin 1.4s ease-in-out infinite",
+            height: "100vh",
+            backgroundColor: "var(--bg-primary)",
+            overflow: "hidden",
           }}
-        />
-        <p
-          className="mt-4"
-          style={{
-            color: "#e91e63",
-            fontWeight: "bold",
-            fontSize: "1.1rem",
-          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
         >
-          Carregando seus dados, Miminha... 🐖
-        </p>
-
-        {/* 🔸 Animação CSS embutida */}
-        <style>
-          {`
-            @keyframes elasticSpin {
-              0% { transform: rotate(0deg) scale(1); }
-              25% { transform: rotate(10deg) scale(1.05); }
-              50% { transform: rotate(0deg) scale(0.97); }
-              75% { transform: rotate(-10deg) scale(1.05); }
-              100% { transform: rotate(0deg) scale(1); }
-            }
-          `}
-        </style>
-      </div>
+          <motion.img
+            src={chovirico}
+            alt="Porquinho carregando..."
+            style={{
+              width: "140px",
+              height: "140px",
+              borderRadius: "50%",
+              border: "4px solid var(--accent-light)",
+              padding: "10px",
+            }}
+            animate={{
+              rotate: [0, 10, 0, -10, 0],
+              scale: [1, 1.05, 0.97, 1.05, 1],
+            }}
+            transition={{
+              duration: 1.4,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+          <motion.p
+            className="mt-4"
+            style={{
+              color: "var(--accent-color)",
+              fontWeight: "bold",
+              fontSize: "1.1rem",
+            }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+          >
+            Carregando seus dados, Miminha... 🐖
+          </motion.p>
+        </motion.div>
+      </ThemeProvider>
     );
   }
 
   // 🔹 Resto do app
   return (
-    <div className="container my-4">
-      <Toaster position="top-center" />
-      <div className="text-center mb-4">
-        <h1 style={{ color: "#e91e63" }}>
-          <span style={{ color: "#000" }}>Olá,</span> Miminha!
-        </h1>
-        <img
-          src={chovirico}
-          alt="Foto do usuário"
-          style={{
-            width: "140px",
-            height: "140px",
-            borderRadius: "50%",
-            border: "4px solid #f8bbd0",
-            padding: "10px",
-          }}
-        />
-      </div>
-
-      <div className="row">
-        <div className="col-md-6 mb-3">
-          <SaldoAtual
-            saldoAtual={saldoAtual}
-            setSaldoAtual={setSaldoAtual}
-            saldoAnterior={saldoAnterior}
-            setSaldoAnterior={setSaldoAnterior}
-            dataAtual={dataAtual}
-            setDataAtual={setDataAtual}
-            setDataAnterior={setDataAnterior}
-            setHistorico={setHistorico}
-            mostrar={mostrar}
-            setMostrar={setMostrar}
-          />
+    <ThemeProvider>
+      <motion.div 
+        className="container my-4"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+      >
+        <Toaster position="top-center" />
+        
+        {/* Header com toggle de tema */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
+          <motion.div 
+            className="text-center flex-grow-1 mb-3 mb-md-0"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <h1 style={{ color: "var(--accent-color)", fontSize: "clamp(1.5rem, 4vw, 2.5rem)" }}>
+              <span style={{ color: "var(--text-primary)" }}>Olá,</span> Miminha!
+            </h1>
+            <h2 style={{ color: "var(--text-primary)", fontSize: "1.5rem" }}>Te amo muito, meu amor! 🐖</h2>
+            <motion.img
+              src={chovirico}
+              alt="Foto do usuário"
+              style={{
+                width: "clamp(100px, 20vw, 140px)",
+                height: "clamp(100px, 20vw, 140px)",
+                borderRadius: "50%",
+                border: "4px solid var(--accent-light)",
+                padding: "10px",
+              }}
+              whileHover={{ 
+                scale: 1.05,
+                rotate: [0, -5, 5, 0],
+                transition: { duration: 0.3 }
+              }}
+              whileTap={{ scale: 0.95 }}
+            />
+          </motion.div>
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.3 }}
+          >
+            <ThemeToggle />
+          </motion.div>
         </div>
-        <div className="col-md-6 mb-3">
-          <SaldoAnterior
-            saldoAnterior={saldoAnterior}
-            dataAnterior={dataAnterior}
-            mostrar={mostrar}
-          />
-        </div>
-      </div>
 
-      <HistoricoDeValores
-        historico={historico}
-        mostrar={mostrar}
-        saldoAtual={saldoAtual}
-      />
+        {/* Sistema de Abas */}
+        <Tabs
+          tabs={[
+            { id: "dashboard", label: "Dashboard", icon: "🏠" },
+            { id: "historico", label: "Histórico", icon: "📊" },
+            { id: "estatisticas", label: "Estatísticas", icon: "📈" }
+          ]}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        >
+          {activeTab === "dashboard" && (
+            <div>
+              <motion.div 
+                className="row"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <motion.div 
+                  className="col-md-6 mb-3"
+                  initial={{ opacity: 0, x: -50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1, duration: 0.5 }}
+                >
+                  <SaldoAtual
+                    saldoAtual={saldoAtual}
+                    setSaldoAtual={setSaldoAtual}
+                    saldoAnterior={saldoAnterior}
+                    setSaldoAnterior={setSaldoAnterior}
+                    dataAtual={dataAtual}
+                    setDataAtual={setDataAtual}
+                    setDataAnterior={setDataAnterior}
+                    setHistorico={setHistorico}
+                    mostrar={mostrar}
+                    setMostrar={setMostrar}
+                  />
+                </motion.div>
+                <motion.div 
+                  className="col-md-6 mb-3"
+                  initial={{ opacity: 0, x: 50 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2, duration: 0.5 }}
+                >
+                  <SaldoAnterior
+                    saldoAnterior={saldoAnterior}
+                    dataAnterior={dataAnterior}
+                    mostrar={mostrar}
+                  />
+                </motion.div>
+              </motion.div>
+            </div>
+          )}
 
-      <footer className="mt-4 py-3 border-top bg-light text-center">
-        <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-          <span className="text-muted">© 2025 Mimo Finanças</span>
-          <span className="text-muted">V0.2.0</span>
-          <span className="text-muted">
-            Desenvolvido por{" "}
-            <a
-              href="https://github.com/MauricioSts"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: "#e91e63", textDecoration: "none" }}
-            >
-              Mauricio
-            </a>
-          </span>
-        </div>
-      </footer>
-    </div>
+          {activeTab === "historico" && (
+            <HistoricoDeValores
+              historico={historico}
+              mostrar={mostrar}
+              saldoAtual={saldoAtual}
+            />
+          )}
+
+          {activeTab === "estatisticas" && (
+            <Estatisticas
+              historico={historico}
+              saldoAtual={saldoAtual}
+              mostrar={mostrar}
+            />
+          )}
+        </Tabs>
+
+        <motion.footer 
+          className="mt-4 py-3 border-top text-center"
+          style={{ backgroundColor: "var(--footer-bg)" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7, duration: 0.5 }}
+        >
+          <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center">
+            <span style={{ color: "var(--text-secondary)" }}>© 2025 Mimo Finanças</span>
+            <span style={{ color: "var(--text-secondary)" }}>V0.2.0</span>
+            <span style={{ color: "var(--text-secondary)" }}>
+              Desenvolvido por{" "}
+              <a
+                href="https://github.com/MauricioSts"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: "var(--accent-color)", textDecoration: "none" }}
+              >
+                Mauricio
+              </a>
+            </span>
+          </div>
+        </motion.footer>
+      </motion.div>
+    </ThemeProvider>
   );
 }
 

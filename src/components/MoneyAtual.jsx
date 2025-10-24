@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -49,50 +50,130 @@ function SaldoAtual({
   const cresceu = parseFloat(crescimento) < 0 ? "diminuiu" : "cresceu";
 
   return (
-    <div className="card shadow-sm">
-      <div className="card-body">
-        <h5 className="card-title">
-          Saldo Atual{" "}
-          <button
+    <motion.div 
+      className="card shadow-sm border-0"
+      style={{
+        backgroundColor: "var(--card-bg)",
+        borderRadius: "20px",
+        padding: "20px",
+        boxShadow: "var(--shadow-lg)",
+        border: "1px solid var(--border-color)"
+      }}
+      whileHover={{ y: -5 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+    >
+      <div className="card-body p-0">
+        <motion.h5 
+          className="card-title d-flex flex-column flex-md-row justify-content-between align-items-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <span className="mb-2 mb-md-0" style={{ color: "var(--text-primary)" }}>Saldo Atual</span>
+          <motion.button
             className="btn"
-            style={{ backgroundColor: "#F4C2C2", border: "none" }}
+            style={{ 
+              backgroundColor: "var(--accent-light)", 
+              border: "none",
+              borderRadius: "50%",
+              width: "40px",
+              height: "40px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
             onClick={alternarVisibilidade}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            {mostrar ? <Eye size={20} /> : <EyeOff size={20} />}
-          </button>
-        </h5>
-        {mostrar && (
-          <h2 style={{ color: " #e91e63" }}>{saldoAtual.toFixed(2)} R$</h2>
-        )}
+            <motion.div
+              animate={{ rotate: mostrar ? 0 : 180 }}
+              transition={{ duration: 0.3 }}
+            >
+              {mostrar ? <Eye size={20} /> : <EyeOff size={20} />}
+            </motion.div>
+          </motion.button>
+        </motion.h5>
+        
+        <AnimatePresence>
+          {mostrar && (
+            <motion.h2 
+              style={{ color: "var(--accent-color)" }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.3 }}
+            >
+              {saldoAtual.toFixed(2)} R$
+            </motion.h2>
+          )}
+        </AnimatePresence>
 
-        <p className="mb-1">Última atualização: {dataAtual}</p>
-        {mostrar && (
-          <p className="mb-3">
-            <span style={{ color: "#e91e63", fontWeight: "bold" }}>
-              {cresceu} {Math.abs(crescimento)}%
-            </span>{" "}
-            em relação ao valor anterior
-          </p>
-        )}
+        <motion.p 
+          className="mb-1"
+          style={{ color: "var(--text-secondary)" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
+        >
+          Última atualização: {dataAtual}
+        </motion.p>
+        
+        <AnimatePresence>
+          {mostrar && (
+            <motion.p 
+              className="mb-3"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
+                {cresceu} {Math.abs(crescimento)}%
+              </span>{" "}
+              em relação ao valor anterior
+            </motion.p>
+          )}
+        </AnimatePresence>
 
-        <div className="input-group mb-3">
+        <motion.div 
+          className="d-flex flex-column flex-md-row gap-2 mb-3"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.3 }}
+        >
           <input
             type="number"
-            className="form-control"
+            className="form-control flex-grow-1"
             placeholder="Novo valor"
             value={novoValor}
             onChange={(e) => setNovoValor(e.target.value)}
+            style={{ 
+              color: "var(--text-primary)",
+              backgroundColor: "var(--input-bg)",
+              border: "1px solid var(--border-color)"
+            }}
           />
-          <button
+          <motion.button
             className="btn"
-            style={{ backgroundColor: "#F4C2C2", border: "none" }}
+            style={{ 
+              backgroundColor: "var(--accent-color)", 
+              border: "none",
+              color: "white",
+              fontWeight: "bold",
+              minWidth: "120px"
+            }}
             onClick={handleAtualizar}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             Atualizar
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
