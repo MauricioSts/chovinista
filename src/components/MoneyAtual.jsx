@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
-
+import CountUp from './CountUp'
 function SaldoAtual({
   saldoAtual,
   setSaldoAtual,
@@ -98,42 +98,40 @@ function SaldoAtual({
         
         <AnimatePresence>
           {mostrar && (
-            <motion.h2 
-              style={{ color: "var(--accent-color)" }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.3 }}
-            >
-              {saldoAtual.toFixed(2)} R$
-            </motion.h2>
-          )}
-        </AnimatePresence>
-
-        <motion.p 
-          className="mb-1"
-          style={{ color: "var(--text-secondary)" }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1, duration: 0.3 }}
-        >
-          Última atualização: {dataAtual}
-        </motion.p>
-        
-        <AnimatePresence>
-          {mostrar && (
-            <motion.p 
-              className="mb-3"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-            >
-              <span style={{ color: "var(--accent-color)", fontWeight: "bold" }}>
-                {cresceu} {Math.abs(crescimento)}%
-              </span>{" "}
-              em relação ao valor anterior
-            </motion.p>
+            <div>
+              <motion.h2 
+                style={{ color: "var(--accent-color)" }}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h1><CountUp
+                  from={0}
+                  to={saldoAtual.toFixed(2)}
+                  separator=","
+                  direction="up"
+                  duration={1}
+                  className="count-up-text"
+                /> <span style={{ color: "var(--accent-color)" }} fontWeight="bold"> R$</span></h1>
+              </motion.h2>
+              {dataAtual && (
+                <motion.p
+                  style={{ 
+                    color: "var(--text-secondary)", 
+                    fontSize: "0.9rem",
+                    marginTop: "5px",
+                    marginBottom: "0"
+                  }}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3, delay: 0.1 }}
+                >
+                  Última atualização: {dataAtual}
+                </motion.p>
+              )}
+            </div>
           )}
         </AnimatePresence>
 

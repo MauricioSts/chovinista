@@ -11,6 +11,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 import { db } from "./firebase/config";
 import { Toaster, toast } from "react-hot-toast";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import SplitText from "./components/SplitText";
 
 function App() {
   const [saldoAtual, setSaldoAtual] = useState(0);
@@ -140,26 +141,38 @@ function App() {
   // 🔹 Resto do app
   return (
     <ThemeProvider>
-      <motion.div 
+      <motion.div
         className="container my-4"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
         <Toaster position="top-center" />
-        
+
         {/* Header com toggle de tema */}
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4">
-          <motion.div 
+          <motion.div
             className="text-center flex-grow-1 mb-3 mb-md-0"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <h1 style={{ color: "var(--accent-color)", fontSize: "clamp(1.5rem, 4vw, 2.5rem)" }}>
-              <span style={{ color: "var(--text-primary)" }}>Olá,</span> Miminha!
+            <h1
+              style={{
+                color: "var(--accent-color)",
+                fontSize: "clamp(1.5rem, 4vw, 2.5rem)",
+              }}
+            >
+              <SplitText
+                text="Olá miminha"
+                className="text-2xl font-semibold text-center"
+                delay={100}
+                duration={0.6}
+              />
             </h1>
-            <h2 style={{ color: "var(--text-primary)", fontSize: "1.5rem" }}>Te amo muito, meu amor! 🐖</h2>
+            <h2 style={{ color: "var(--text-primary)", fontSize: "1.5rem" }}>
+              Te amo muito, meu amor! 🐖
+            </h2>
             <motion.img
               src={chovirico}
               alt="Foto do usuário"
@@ -170,15 +183,15 @@ function App() {
                 border: "4px solid var(--accent-light)",
                 padding: "10px",
               }}
-              whileHover={{ 
+              whileHover={{
                 scale: 1.05,
                 rotate: [0, -5, 5, 0],
-                transition: { duration: 0.3 }
+                transition: { duration: 0.3 },
               }}
               whileTap={{ scale: 0.95 }}
             />
           </motion.div>
-          
+
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -193,20 +206,20 @@ function App() {
           tabs={[
             { id: "dashboard", label: "Dashboard", icon: "🏠" },
             { id: "historico", label: "Histórico", icon: "📊" },
-            { id: "estatisticas", label: "Estatísticas", icon: "📈" }
+            { id: "estatisticas", label: "Estatísticas", icon: "📈" },
           ]}
           activeTab={activeTab}
           onTabChange={setActiveTab}
         >
           {activeTab === "dashboard" && (
             <div>
-              <motion.div 
+              <motion.div
                 className="row"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <motion.div 
+                <motion.div
                   className="col-md-6 mb-3"
                   initial={{ opacity: 0, x: -50 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -225,7 +238,7 @@ function App() {
                     setMostrar={setMostrar}
                   />
                 </motion.div>
-                <motion.div 
+                <motion.div
                   className="col-md-6 mb-3"
                   initial={{ opacity: 0, x: 50 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -258,7 +271,7 @@ function App() {
           )}
         </Tabs>
 
-        <motion.footer 
+        <motion.footer
           className="mt-4 py-3 border-top text-center"
           style={{ backgroundColor: "var(--footer-bg)" }}
           initial={{ opacity: 0 }}
@@ -266,7 +279,9 @@ function App() {
           transition={{ delay: 0.7, duration: 0.5 }}
         >
           <div className="container d-flex flex-column flex-md-row justify-content-between align-items-center">
-            <span style={{ color: "var(--text-secondary)" }}>© 2025 Mimo Finanças</span>
+            <span style={{ color: "var(--text-secondary)" }}>
+              © 2025 Mimo Finanças
+            </span>
             <span style={{ color: "var(--text-secondary)" }}>V0.2.0</span>
             <span style={{ color: "var(--text-secondary)" }}>
               Desenvolvido por{" "}
