@@ -1,8 +1,9 @@
 // Importar funções necessárias
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
-// Configuração do Firebase (mantém a sua)
+// Configuração do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDeE3OueCxFpHtvEoWoV9Ov3M1LeTIo63w",
   authDomain: "chovinista-822a6.firebaseapp.com",
@@ -13,8 +14,10 @@ const firebaseConfig = {
   measurementId: "G-K995W7ET2M",
 };
 
-// Inicializa o app e o Firestore
+// Inicializa o app, Firestore e Auth
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
 
-export { db };
+export { db, auth, googleProvider };

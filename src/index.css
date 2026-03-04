@@ -1,136 +1,303 @@
-/* Reset e configurações base */
-* {
+/* ============================================
+   🐖 CHOVINISTA — Premium Mobile-First Design
+   ============================================ */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+/* Reset */
+*, *::before, *::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Variáveis CSS para tema claro */
+/* ============================================
+   Design Tokens — Light Theme 
+   ============================================ */
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --bg-tertiary: #e9ecef;
-  --text-primary: #212529;
-  --text-secondary: #6c757d;
-  --text-muted: #adb5bd;
-  --accent-color: #e91e63;
-  --accent-light: #f8bbd0;
+  /* Surface colors */
+  --bg-primary: #faf8ff;
+  --bg-secondary: #f3f0fa;
+  --bg-tertiary: #ece8f5;
+  --card-bg: rgba(255, 255, 255, 0.72);
+  --card-bg-solid: #ffffff;
+  --input-bg: rgba(255, 255, 255, 0.9);
+  --footer-bg: rgba(243, 240, 250, 0.8);
+
+  /* Text colors */
+  --text-primary: #1a1225;
+  --text-secondary: #5c5470;
+  --text-muted: #9e95b0;
+
+  /* Accent — Rose/Magenta gradient */
+  --accent-color: #e8367c;
+  --accent-light: #fce4ef;
   --accent-dark: #c2185b;
-  --border-color: #dee2e6;
-  --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
-  --toggle-bg: #e9ecef;
-  --toggle-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --card-bg: #ffffff;
-  --input-bg: #ffffff;
-  --footer-bg: #f8f9fa;
+  --accent-gradient: linear-gradient(135deg, #e8367c 0%, #f06292 50%, #ff80ab 100%);
+  --accent-gradient-soft: linear-gradient(135deg, rgba(232, 54, 124, 0.12) 0%, rgba(240, 98, 146, 0.08) 100%);
+
+  /* Borders & Shadows */
+  --border-color: rgba(0, 0, 0, 0.06);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.12);
+  --shadow-glow: 0 4px 24px rgba(232, 54, 124, 0.2);
+
+  /* Glass */
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-blur: 20px;
+
+  /* Toggle */
+  --toggle-bg: #ece8f5;
+  --toggle-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* Misc */
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 28px;
+  --radius-full: 9999px;
+  --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Variáveis CSS para tema escuro */
+/* ============================================
+   Design Tokens — Dark Theme
+   ============================================ */
 [data-theme="dark"] {
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #1a1a1a;
-  --bg-tertiary: #2a2a2a;
-  --text-primary: #ffffff;
-  --text-secondary: #e0e0e0;
-  --text-muted: #a0a0a0;
-  --accent-color: #ff4081;
-  --accent-light: #ff79b0;
-  --accent-dark: #e91e63;
-  --border-color: #333333;
-  --shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.6);
-  --toggle-bg: #2a2a2a;
-  --toggle-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-  --card-bg: #1a1a1a;
-  --input-bg: #2a2a2a;
-  --footer-bg: #0f0f0f;
+  --bg-primary: #0c0a14;
+  --bg-secondary: #151220;
+  --bg-tertiary: #1e1a2e;
+  --card-bg: rgba(30, 26, 46, 0.72);
+  --card-bg-solid: #1e1a2e;
+  --input-bg: rgba(30, 26, 46, 0.9);
+  --footer-bg: rgba(12, 10, 20, 0.8);
+
+  --text-primary: #f0ecf7;
+  --text-secondary: #b0a8c4;
+  --text-muted: #6e6585;
+
+  --accent-color: #ff4d8d;
+  --accent-light: #2d1a28;
+  --accent-dark: #e8367c;
+  --accent-gradient: linear-gradient(135deg, #ff4d8d 0%, #ff6fa0 50%, #ff8ab5 100%);
+  --accent-gradient-soft: linear-gradient(135deg, rgba(255, 77, 141, 0.15) 0%, rgba(255, 111, 160, 0.08) 100%);
+
+  --border-color: rgba(255, 255, 255, 0.06);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.5);
+  --shadow-glow: 0 4px 24px rgba(255, 77, 141, 0.25);
+
+  --glass-bg: rgba(30, 26, 46, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: 20px;
+
+  --toggle-bg: #1e1a2e;
+  --toggle-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
-/* Aplicação das variáveis */
+/* ============================================
+   Base Styles
+   ============================================ */
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color var(--transition), color var(--transition);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* Animações globais */
-.fade-in {
-  animation: fadeIn 0.5s ease-in-out;
+/* Subtle background pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(232, 54, 124, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(240, 98, 146, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
+[data-theme="dark"] body::before {
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(255, 77, 141, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 111, 160, 0.04) 0%, transparent 50%);
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   Typography
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+/* ============================================
+   Scrollbar
+   ============================================ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* ============================================
+   Animations
+   ============================================ */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.slide-up {
-  animation: slideUp 0.4s ease-out;
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Estilos para cards */
-.card {
-  background-color: var(--card-bg) !important;
-  border: 1px solid var(--border-color) !important;
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 54, 124, 0.3); }
+  50%      { box-shadow: 0 0 0 8px rgba(232, 54, 124, 0); }
+}
+
+@keyframes elasticSpin {
+  0%   { transform: rotate(0deg) scale(1); }
+  25%  { transform: rotate(10deg) scale(1.05); }
+  50%  { transform: rotate(0deg) scale(0.97); }
+  75%  { transform: rotate(-10deg) scale(1.05); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+.fade-in { animation: fadeIn 0.5s ease-out; }
+.slide-up { animation: slideUp 0.4s ease-out; }
+
+/* ============================================
+   Glass Card
+   ============================================ */
+.card,
+.glass-card {
+  background: var(--card-bg) !important;
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius-lg) !important;
   color: var(--text-primary) !important;
-  transition: all 0.3s ease;
+  transition: transform var(--transition), box-shadow var(--transition);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
 }
 
-.card:hover {
+.card:hover,
+.glass-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg) !important;
 }
 
-/* Estilos para inputs */
+.card-body {
+  padding: 20px !important;
+}
+
+/* ============================================
+   Inputs — Mobile-first (large touch targets)
+   ============================================ */
 .form-control {
   background-color: var(--input-bg) !important;
-  border: 1px solid var(--border-color) !important;
+  border: 1.5px solid var(--border-color) !important;
+  border-radius: var(--radius-full) !important;
   color: var(--text-primary) !important;
-  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 14px 20px;
+  transition: all var(--transition);
+  -webkit-appearance: none;
 }
 
 .form-control::placeholder {
   color: var(--text-muted) !important;
-  opacity: 0.8;
+  opacity: 0.7;
+  font-weight: 400;
 }
 
 .form-control:focus {
   background-color: var(--input-bg) !important;
   border-color: var(--accent-color) !important;
   color: var(--text-primary) !important;
-  box-shadow: 0 0 0 0.2rem rgba(233, 30, 99, 0.25) !important;
+  box-shadow: 0 0 0 3px rgba(232, 54, 124, 0.15), var(--shadow-sm) !important;
+  outline: none;
 }
 
-.form-control:focus::placeholder {
-  color: var(--text-muted) !important;
-  opacity: 0.6;
-}
-
-/* Estilos para botões */
+/* ============================================
+   Buttons — Mobile-first (large, juicy)
+   ============================================ */
 .btn {
-  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 14px 24px;
+  border-radius: var(--radius-full) !important;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(255,255,255,0.15), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.btn:hover::after {
+  opacity: 1;
 }
 
 .btn:hover {
@@ -138,42 +305,63 @@ body {
   box-shadow: var(--shadow);
 }
 
-/* Estilos para o footer */
+.btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-accent {
+  background: var(--accent-gradient);
+  color: white;
+  box-shadow: var(--shadow-glow);
+}
+
+.btn-accent:hover {
+  box-shadow: 0 6px 28px rgba(232, 54, 124, 0.35);
+}
+
+/* ============================================
+   Footer
+   ============================================ */
 footer {
-  background-color: var(--footer-bg) !important;
+  background: var(--footer-bg) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid var(--border-color) !important;
   color: var(--text-secondary) !important;
 }
 
-/* Animações para o porquinho */
-@keyframes elasticSpin {
-  0% { transform: rotate(0deg) scale(1); }
-  25% { transform: rotate(10deg) scale(1.05); }
-  50% { transform: rotate(0deg) scale(0.97); }
-  75% { transform: rotate(-10deg) scale(1.05); }
-  100% { transform: rotate(0deg) scale(1); }
-}
-
-/* Estilos específicos para tabelas */
+/* ============================================
+   Tables
+   ============================================ */
 .table {
-  background-color: var(--card-bg) !important;
+  background-color: var(--card-bg-solid) !important;
   color: var(--text-primary) !important;
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 
 .table th {
   background-color: var(--bg-tertiary) !important;
   color: var(--text-primary) !important;
   border-color: var(--border-color) !important;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 12px 16px;
 }
 
 .table td {
-  background-color: var(--card-bg) !important;
+  background-color: var(--card-bg-solid) !important;
   color: var(--text-primary) !important;
   border-color: var(--border-color) !important;
+  padding: 14px 16px;
+  font-size: 0.9rem;
 }
 
 .table-striped tbody tr:nth-of-type(odd) td {
-  background-color: var(--card-bg) !important;
+  background-color: var(--card-bg-solid) !important;
 }
 
 .table-striped tbody tr:nth-of-type(even) td {
@@ -184,182 +372,249 @@ footer {
   background-color: var(--bg-tertiary) !important;
 }
 
-/* Responsividade Mobile First */
-@media (max-width: 768px) {
+/* ============================================
+   Stat Mini Card  
+   ============================================ */
+.stat-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  transition: all var(--transition);
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+
+.stat-card .stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+  background: var(--accent-gradient-soft);
+}
+
+.stat-card .stat-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.stat-card .stat-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  line-height: 1.1;
+}
+
+/* ============================================
+   Container — Mobile-first
+   ============================================ */
+.container {
+  max-width: 100%;
+  padding: 0 16px;
+}
+
+/* ============================================
+   Bottom Nav (Mobile)
+   ============================================ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-top: 1px solid var(--glass-border);
+  padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.bottom-nav-item.active {
+  color: var(--accent-color);
+}
+
+.bottom-nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  border-radius: 0 0 4px 4px;
+  background: var(--accent-gradient);
+}
+
+.bottom-nav-item .nav-icon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+/* ============================================
+   History Timeline Item
+   ============================================ */
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--card-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  transition: all var(--transition);
+}
+
+.history-item:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
+}
+
+.history-item .history-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px var(--accent-light);
+}
+
+.history-item .history-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--accent-color);
+}
+
+.history-item .history-date {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+/* ============================================
+   Progress / Growth bar
+   ============================================ */
+.growth-bar-wrapper {
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-full);
+  height: 8px;
+  overflow: hidden;
+}
+
+.growth-bar-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--accent-gradient);
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   Recharts overrides
+   ============================================ */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-responsive-container {
+  width: 100% !important;
+}
+
+/* ============================================
+   Utilities
+   ============================================ */
+.text-accent {
+  color: var(--accent-color);
+}
+
+.bg-accent-soft {
+  background: var(--accent-gradient-soft);
+}
+
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* ============================================
+   RESPONSIVE: Tablet and up (≥768px)
+   ============================================ */
+@media (min-width: 768px) {
   .container {
-    padding: 0 10px;
-    max-width: 100%;
+    max-width: 720px;
+    padding: 0 24px;
+    margin: 0 auto;
   }
-  
-  /* Layout mobile otimizado */
-  body {
-    font-size: 16px;
-    line-height: 1.5;
+
+  .bottom-nav {
+    display: none;
   }
-  
-  /* Cards mobile */
-  .card {
-    margin-bottom: 20px;
-    border-radius: 15px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) !important;
-  }
-  
+
   .card-body {
-    padding: 20px !important;
-  }
-  
-  /* Botões mobile */
-  .btn {
-    width: 100%;
-    margin-bottom: 15px;
-    padding: 15px 20px;
-    font-size: 16px;
-    border-radius: 25px !important;
-    font-weight: bold;
-  }
-  
-  /* Inputs mobile */
-  .form-control {
-    font-size: 16px;
-    padding: 15px 20px;
-    border-radius: 25px !important;
-    border: 2px solid var(--border-color) !important;
-  }
-  
-  .form-control:focus {
-    border-color: var(--accent-color) !important;
-    box-shadow: 0 0 0 0.3rem rgba(233, 30, 99, 0.25) !important;
-  }
-  
-  /* Tabelas mobile */
-  .table-responsive {
-    font-size: 14px;
-    border-radius: 15px;
-    overflow: hidden;
-  }
-  
-  .table th, .table td {
-    padding: 12px 8px;
-  }
-  
-  /* Abas mobile */
-  .nav-tabs {
-    flex-wrap: wrap;
-    justify-content: center;
-    border: none !important;
-    margin-bottom: 20px;
-  }
-  
-  .nav-tabs .nav-link {
-    margin: 5px;
-    padding: 12px 20px;
-    font-size: 16px;
-    border-radius: 25px !important;
-    border: 2px solid var(--border-color) !important;
-    background: var(--bg-secondary) !important;
-    color: var(--text-primary) !important;
-    font-weight: bold;
-  }
-  
-  .nav-tabs .nav-link.active {
-    background: var(--accent-color) !important;
-    color: white !important;
-    border-color: var(--accent-color) !important;
-  }
-  
-  /* Gráficos mobile */
-  .recharts-wrapper {
-    width: 100% !important;
-    height: 250px !important;
-  }
-  
-  .recharts-surface {
-    width: 100% !important;
-    height: 100% !important;
-  }
-  
-  .recharts-responsive-container {
-    width: 100% !important;
-    height: 250px !important;
-  }
-  
-  /* Estatísticas mobile */
-  .row .col-md-6 {
-    margin-bottom: 20px;
-  }
-  
-  /* Títulos mobile */
-  h1 {
-    font-size: 2rem !important;
-    margin-bottom: 20px !important;
-  }
-  
-  h2 {
-    font-size: 1.5rem !important;
-  }
-  
-  h5 {
-    font-size: 1.2rem !important;
-  }
-  
-  /* Espaçamentos mobile */
-  .mb-3 {
-    margin-bottom: 20px !important;
-  }
-  
-  .mb-4 {
-    margin-bottom: 25px !important;
-  }
-  
-  .mt-4 {
-    margin-top: 25px !important;
-  }
-  
-  /* Footer mobile */
-  footer {
-    font-size: 14px;
-    padding: 20px 0 !important;
-  }
-  
-  footer .container {
-    flex-direction: column;
-    text-align: center;
-  }
-  
-  footer .container > * {
-    margin-bottom: 10px;
+    padding: 24px !important;
   }
 }
 
-/* Mobile muito pequeno */
-@media (max-width: 480px) {
+/* ============================================
+   RESPONSIVE: Desktop (≥1024px)
+   ============================================ */
+@media (min-width: 1024px) {
   .container {
-    padding: 0 5px;
+    max-width: 960px;
   }
-  
+}
+
+/* ============================================
+   RESPONSIVE: Small phones (≤380px)
+   ============================================ */
+@media (max-width: 380px) {
+  html {
+    font-size: 14px;
+  }
+
   .card-body {
-    padding: 15px !important;
+    padding: 14px !important;
   }
-  
+
   .btn {
-    padding: 12px 15px;
-    font-size: 14px;
+    padding: 12px 16px;
+    font-size: 0.9rem;
   }
-  
+
   .form-control {
-    padding: 12px 15px;
-    font-size: 14px;
-  }
-  
-  h1 {
-    font-size: 1.8rem !important;
-  }
-  
-  .recharts-wrapper {
-    height: 200px !important;
-  }
-  
-  .recharts-responsive-container {
-    height: 200px !important;
+    padding: 12px 16px;
   }
 }
