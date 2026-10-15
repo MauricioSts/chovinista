@@ -1,253 +1,163 @@
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff, ArrowUpRight } from "lucide-react";
-import toast from "react-hot-toast";
-import CountUp from "./CountUp";
+import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
+import { useMotionValue, useSpring } from "motion/react";
+import { Eye, EyeOff, ArrowUpRight, ArrowDownRight } from "lucide-react";
+import { formatBRL, formatSigned } from "../utils/format";
+
+const numero = new Intl.NumberFormat("pt-BR", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+// Valor que sobe até o saldo com mola, já no formato pt-BR
+function AnimatedBRL({ valor }) {
+  const ref = useRef(null);
+  const mv = useMotionValue(0);
+  const spring = useSpring(mv, { damping: 30, stiffness: 120 });
+
+  useEffect(() => {
+    mv.set(valor);
+  }, [valor, mv]);
+
+  useEffect(
+    () =>
+      spring.on("change", (v) => {
+        if (ref.current) ref.current.textContent = numero.format(v);
+      }),
+    [spring]
+  );
+
+  return (
+    <>
+      <span className="saldo-moeda">R$</span>
+      <span ref={ref}>{numero.format(0)}</span>
+    </>
+  );
+}
 
 function SaldoAtual({
   saldoAtual,
-  setSaldoAtual,
   saldoAnterior,
-  setSaldoAnterior,
   dataAtual,
-  setDataAtual,
-  setDataAnterior,
-  setHistorico,
+  dataAnterior,
+  onAtualizar,
   mostrar,
   setMostrar,
 }) {
   const [novoValor, setNovoValor] = useState("");
+  const [erro, setErro] = useState("");
 
-  function handleAtualizar() {
-    if (!novoValor) return toast.error("Digite um valor válido 🐖");
-    const novoValorNumerico = parseFloat(novoValor);
-    if (isNaN(novoValorNumerico)) return alert("Valor inválido!");
-
-    setSaldoAnterior(saldoAtual);
-    setSaldoAtual(novoValorNumerico);
-    const novaData = new Date().toLocaleDateString("pt-BR");
-    setDataAnterior(dataAtual);
-    setDataAtual(novaData);
-
-    setHistorico((prev) => [
-      { valor: novoValorNumerico, data: novaData },
-      ...prev,
-    ]);
-
+  function handleSubmit(e) {
+    e.preventDefault();
+    const n = parseFloat(String(novoValor).replace(",", "."));
+    if (!novoValor || isNaN(n)) {
+      setErro("Digite um valor, tipo 1250,40");
+      return;
+    }
+    setErro("");
+    onAtualizar(n);
     setNovoValor("");
   }
 
-  const alternarVisibilidade = () => {
-    setMostrar(!mostrar);
-  };
-
-  const crescimento = saldoAnterior
-    ? (((saldoAtual - saldoAnterior) / saldoAnterior) * 100).toFixed(2)
-    : "0.00";
-
-  const cresceu = parseFloat(crescimento) >= 0;
+  const diferenca = saldoAtual - saldoAnterior;
+  const percentual = saldoAnterior
+    ? ((diferenca / saldoAnterior) * 100).toFixed(1).replace(".", ",")
+    : null;
+  const cresceu = diferenca >= 0;
+  const Seta = cresceu ? ArrowUpRight : ArrowDownRight;
 
   return (
-    <motion.div
-      className="glass-card"
-      style={{
-        padding: "24px",
-        position: "relative",
-        overflow: "hidden",
-      }}
-      whileHover={{ y: -3 }}
-      transition={{ type: "spring", stiffness: 300, damping: 20 }}
-    >
-      {/* Decorative gradient blob */}
-      <div
-        style={{
-          position: "absolute",
-          top: "-40px",
-          right: "-40px",
-          width: "120px",
-          height: "120px",
-          borderRadius: "50%",
-          background: "var(--accent-gradient)",
-          opacity: 0.08,
-          filter: "blur(30px)",
-          pointerEvents: "none",
-        }}
-      />
+    <section className="saldo-card" aria-labelledby="saldo-titulo">
+      <div className="saldo-topo">
+        <h2 id="saldo-titulo" className="eyebrow">
+          Saldo de hoje
+        </h2>
+        <button
+          type="button"
+          className="icon-btn"
+          onClick={() => setMostrar(!mostrar)}
+          aria-label={mostrar ? "Esconder valores" : "Mostrar valores"}
+          aria-pressed={!mostrar}
+        >
+          {mostrar ? (
+            <Eye size={18} strokeWidth={1.75} />
+          ) : (
+            <EyeOff size={18} strokeWidth={1.75} />
+          )}
+        </button>
+      </div>
 
-      {/* Title row */}
-      <motion.div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "16px",
-        }}
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div>
-          <span
-            style={{
-              fontSize: "0.75rem",
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              color: "var(--text-muted)",
-            }}
+      <div className="saldo-valor num" aria-live="polite">
+        {mostrar ? (
+          <AnimatedBRL valor={saldoAtual} />
+        ) : (
+          <>
+            <span className="saldo-moeda">R$</span>••••
+          </>
+        )}
+      </div>
+
+      <div className="saldo-meta">
+        {saldoAnterior > 0 && (
+          <motion.span
+            className={`delta ${cresceu ? "is-pos" : "is-neg"}`}
+            initial={{ opacity: 0, x: -6 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
           >
-            Saldo Atual
-          </span>
+            <Seta size={14} strokeWidth={2} />
+            <span className="num">
+              {formatSigned(diferenca, mostrar)}
+              {percentual && mostrar && ` · ${percentual}%`}
+            </span>
+          </motion.span>
+        )}
+        {dataAtual && <span className="saldo-data">em {dataAtual}</span>}
+      </div>
+
+      <dl className="saldo-anterior">
+        <dt>Antes</dt>
+        <dd>
+          <span className="num">{formatBRL(saldoAnterior, mostrar)}</span>
+          {dataAnterior && <span className="saldo-data"> · {dataAnterior}</span>}
+        </dd>
+      </dl>
+
+      <form className="saldo-form" onSubmit={handleSubmit} noValidate>
+        <label htmlFor="novo-valor" className="sr-only">
+          Novo saldo
+        </label>
+        <div className={`campo ${erro ? "has-error" : ""}`}>
+          <span className="campo-prefixo">R$</span>
+          <input
+            id="novo-valor"
+            type="text"
+            inputMode="decimal"
+            autoComplete="off"
+            placeholder="Novo saldo"
+            value={novoValor}
+            onChange={(e) => {
+              setNovoValor(e.target.value);
+              if (erro) setErro("");
+            }}
+            aria-invalid={!!erro}
+            aria-describedby={erro ? "novo-valor-erro" : undefined}
+          />
         </div>
         <motion.button
-          onClick={alternarVisibilidade}
-          style={{
-            background: "var(--accent-gradient-soft)",
-            border: "1px solid var(--glass-border)",
-            borderRadius: "50%",
-            width: "38px",
-            height: "38px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            color: "var(--accent-color)",
-          }}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-        >
-          <motion.div
-            animate={{ rotate: mostrar ? 0 : 180 }}
-            transition={{ duration: 0.3 }}
-          >
-            {mostrar ? <Eye size={18} /> : <EyeOff size={18} />}
-          </motion.div>
-        </motion.button>
-      </motion.div>
-
-      {/* Saldo display */}
-      <AnimatePresence>
-        {mostrar && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.25 }}
-            style={{ marginBottom: "8px" }}
-          >
-            <div
-              style={{
-                fontFamily: "'Space Grotesk', sans-serif",
-                fontSize: "clamp(2rem, 7vw, 2.8rem)",
-                fontWeight: 800,
-                color: "var(--accent-color)",
-                lineHeight: 1.1,
-                display: "flex",
-                alignItems: "baseline",
-                gap: "6px",
-              }}
-            >
-              <span style={{ fontSize: "0.6em", fontWeight: 600, opacity: 0.7 }}>
-                R$
-              </span>
-              <CountUp
-                from={0}
-                to={saldoAtual.toFixed(2)}
-                separator=","
-                direction="up"
-                duration={1}
-                className="count-up-text"
-              />
-            </div>
-
-            {/* Growth badge */}
-            {saldoAnterior > 0 && (
-              <motion.div
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  marginTop: "8px",
-                  padding: "4px 10px",
-                  borderRadius: "var(--radius-full)",
-                  background: cresceu
-                    ? "rgba(16, 185, 129, 0.1)"
-                    : "rgba(239, 68, 68, 0.1)",
-                  color: cresceu ? "#10b981" : "#ef4444",
-                  fontSize: "0.8rem",
-                  fontWeight: 600,
-                }}
-                initial={{ opacity: 0, x: -8 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <ArrowUpRight
-                  size={14}
-                  style={{
-                    transform: cresceu ? "none" : "rotate(90deg)",
-                  }}
-                />
-                {cresceu ? "+" : ""}
-                {crescimento}%
-              </motion.div>
-            )}
-
-            {dataAtual && (
-              <motion.p
-                style={{
-                  color: "var(--text-muted)",
-                  fontSize: "0.8rem",
-                  marginTop: "8px",
-                  marginBottom: "0",
-                  fontWeight: 500,
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.15 }}
-              >
-                Última atualização: {dataAtual}
-              </motion.p>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Input + Button */}
-      <motion.div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          marginTop: "16px",
-        }}
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.3 }}
-      >
-        <input
-          type="number"
-          className="form-control"
-          placeholder="Novo valor"
-          value={novoValor}
-          onChange={(e) => setNovoValor(e.target.value)}
-        />
-        <motion.button
-          className="btn"
-          style={{
-            background: "var(--accent-gradient)",
-            color: "white",
-            fontWeight: 700,
-            boxShadow: "var(--shadow-glow)",
-            width: "100%",
-          }}
-          onClick={handleAtualizar}
-          whileHover={{ scale: 1.02 }}
+          type="submit"
+          className="btn-primary"
           whileTap={{ scale: 0.97 }}
         >
-          Atualizar Saldo
+          Atualizar
         </motion.button>
-      </motion.div>
-    </motion.div>
+        {erro && (
+          <p id="novo-valor-erro" className="campo-erro" role="alert">
+            {erro}
+          </p>
+        )}
+      </form>
+    </section>
   );
 }
 

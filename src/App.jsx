@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
 import { LogOut } from "lucide-react";
 import SaldoAtual from "./components/MoneyAtual";
-import SaldoAnterior from "./components/SaldoAnterior";
+import Lancamento from "./components/Lancamento";
 import HistoricoDeValores from "./components/Historico";
 import Estatisticas from "./components/Estatisticas";
 import Tabs from "./components/Tabs";
@@ -16,43 +16,31 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import SplitText from "./components/SplitText";
 
+const novoId = () =>
+  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+
 /* ─── Auth Guard ─── */
 function AuthGuard() {
   const { user, loading: authLoading } = useAuth();
 
-  if (authLoading) {
-    return (
-      <motion.div
-        style={{
-          height: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "var(--bg-primary)",
-        }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <motion.div
-          style={{
-            width: "48px",
-            height: "48px",
-            borderRadius: "50%",
-            border: "3px solid var(--border-color)",
-            borderTopColor: "var(--accent-color)",
-          }}
-          animate={{ rotate: 360 }}
-          transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-        />
-      </motion.div>
-    );
-  }
-
-  if (!user) {
-    return <LoginScreen />;
-  }
-
+  if (authLoading) return <TelaCarregando />;
+  if (!user) return <LoginScreen />;
   return <AppContent />;
+}
+
+function TelaCarregando({ texto }) {
+  return (
+    <div className="carregando" role="status">
+      <motion.img
+        src={chovirico}
+        alt=""
+        className="avatar avatar-lg"
+        animate={{ rotate: [0, 8, 0, -8, 0], scale: [1, 1.04, 0.98, 1.04, 1] }}
+        transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {texto && <p>{texto}</p>}
+    </div>
+  );
 }
 
 /* ─── App Content (only renders when authenticated) ─── */
@@ -67,6 +55,12 @@ function AppContent() {
   const [carregando, setCarregando] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
 
+  // O toast de "Desfazer" é criado antes do novo estado existir; o ref dá a versão atual
+  const historicoRef = useRef(historico);
+  useEffect(() => {
+    historicoRef.current = historico;
+  }, [historico]);
+
   // 🔹 Carregar dados do Firestore
   useEffect(() => {
     async function carregarDados() {
@@ -80,13 +74,14 @@ function AppContent() {
           setSaldoAnterior(Number(data.saldoAnterior) || 0);
           setDataAtual(data.dataAtual || "");
           setDataAnterior(data.dataAnterior || "");
-          setHistorico(data.historico || []);
-          console.log("✅ Dados carregados do Firestore!");
-        } else {
-          console.log("Nenhum dado encontrado no Firestore.");
+          // Lançamentos antigos não tinham id; ganham um para poderem ser cancelados
+          setHistorico(
+            (data.historico || []).map((h) => (h.id ? h : { ...h, id: novoId() }))
+          );
         }
       } catch (error) {
         console.error("❌ Erro ao carregar dados:", error);
+        toast.error("Não consegui carregar os dados. Recarregue a página.");
       } finally {
         setCarregando(false);
       }
@@ -113,9 +108,9 @@ function AppContent() {
           },
           { merge: true }
         );
-        toast.success("Dados atualizados 🐖");
       } catch (error) {
         console.error("❌ Erro ao salvar no Firestore:", error);
+        toast.error("Não consegui salvar. Confira a internet e tente de novo.");
       }
     }
 
@@ -129,264 +124,145 @@ function AppContent() {
     carregando,
   ]);
 
-  // 🔹 Tela de carregamento
-  if (carregando) {
-    return (
-      <motion.div
-        style={{
-          height: "100vh",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "var(--bg-primary)",
-          overflow: "hidden",
-          gap: "20px",
-        }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-      >
-        <motion.div
-          style={{
-            width: "120px",
-            height: "120px",
-            borderRadius: "50%",
-            background: "var(--accent-gradient-soft)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "2px solid var(--glass-border)",
-            boxShadow: "var(--shadow-glow)",
-          }}
-          animate={{
-            rotate: [0, 10, 0, -10, 0],
-            scale: [1, 1.05, 0.97, 1.05, 1],
-          }}
-          transition={{
-            duration: 1.4,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        >
-          <img
-            src={chovirico}
-            alt="Carregando..."
-            style={{
-              width: "80px",
-              height: "80px",
-              borderRadius: "50%",
-              objectFit: "cover",
+  function cancelarLancamento(item) {
+    const atual = historicoRef.current;
+    const index = atual.findIndex((h) => h === item || (item.id && h.id === item.id));
+    if (index === -1) return;
+
+    const restante = atual.filter((_, i) => i !== index);
+    setHistorico(restante);
+
+    // Cancelar um dos dois mais recentes muda o saldo atual/anterior
+    if (index <= 1) {
+      setSaldoAtual(restante[0]?.valor ?? 0);
+      setDataAtual(restante[0]?.data ?? "");
+      setSaldoAnterior(restante[1]?.valor ?? 0);
+      setDataAnterior(restante[1]?.data ?? "");
+    }
+
+    toast.success("Lançamento cancelado");
+  }
+
+  function atualizarSaldo(valor) {
+    const data = new Date().toLocaleDateString("pt-BR");
+    const item = { id: novoId(), valor, data };
+
+    setSaldoAnterior(saldoAtual);
+    setSaldoAtual(valor);
+    setDataAnterior(dataAtual);
+    setDataAtual(data);
+    setHistorico((prev) => [item, ...prev]);
+
+    toast(
+      (t) => (
+        <span className="toast-desfazer">
+          Saldo atualizado
+          <button
+            type="button"
+            onClick={() => {
+              toast.dismiss(t.id);
+              cancelarLancamento(item);
             }}
-          />
-        </motion.div>
-        <motion.p
-          style={{
-            color: "var(--text-secondary)",
-            fontFamily: "'Inter', sans-serif",
-            fontWeight: 500,
-            fontSize: "0.95rem",
-          }}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-        >
-          Carregando seus dados, Miminha... 🐖
-        </motion.p>
-      </motion.div>
+          >
+            Desfazer
+          </button>
+        </span>
+      ),
+      { duration: 6000 }
     );
   }
 
-  // 🔹 App
+  if (carregando) return <TelaCarregando texto="Contando as moedinhas…" />;
+
+  const recentes = historico.slice(0, 3);
+
   return (
-    <motion.div
-      className="container"
-      style={{ paddingTop: "20px", paddingBottom: "16px" }}
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
+    <div className="app">
+      <a href="#conteudo" className="skip-link">
+        Pular para o conteúdo
+      </a>
       <Toaster
         position="top-center"
-        toastOptions={{
-          style: {
-            background: "var(--card-bg-solid)",
-            color: "var(--text-primary)",
-            borderRadius: "var(--radius-full)",
-            border: "1px solid var(--border-color)",
-            fontFamily: "'Inter', sans-serif",
-            fontSize: "0.9rem",
-            boxShadow: "var(--shadow-lg)",
-          },
-        }}
+        containerStyle={{ top: "calc(12px + env(safe-area-inset-top))" }}
+        toastOptions={{ className: "toast" }}
       />
 
       {/* ─────── Header ─────── */}
       <motion.header
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          textAlign: "center",
-          marginBottom: "24px",
-          position: "relative",
-        }}
-        initial={{ opacity: 0, y: -16 }}
+        className="topo"
+        initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.5 }}
+        transition={{ duration: 0.4 }}
       >
-        {/* Theme Toggle + Logout — top right */}
-        <motion.div
-          style={{
-            position: "absolute",
-            top: "0",
-            right: "0",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4, duration: 0.3 }}
-        >
-          <ThemeToggle />
-          <motion.button
-            onClick={logout}
-            title="Sair"
-            style={{
-              background: "var(--card-bg)",
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-              border: "1px solid var(--glass-border)",
-              borderRadius: "50%",
-              width: "28px",
-              height: "28px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-              color: "var(--text-muted)",
-              padding: 0,
-            }}
-            whileHover={{ scale: 1.1, color: "var(--accent-color)" }}
-            whileTap={{ scale: 0.9 }}
-          >
-            <LogOut size={13} />
-          </motion.button>
-        </motion.div>
-
-        {/* Avatar */}
-        <motion.div
-          style={{
-            width: "clamp(80px, 18vw, 110px)",
-            height: "clamp(80px, 18vw, 110px)",
-            borderRadius: "50%",
-            background: "var(--accent-gradient-soft)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "2px solid var(--glass-border)",
-            boxShadow: "var(--shadow-glow)",
-            marginBottom: "12px",
-          }}
-          whileHover={{
-            scale: 1.05,
-            rotate: [0, -5, 5, 0],
-            transition: { duration: 0.3 },
-          }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <img
-            src={chovirico}
-            alt="Foto do usuário"
-            style={{
-              width: "calc(100% - 12px)",
-              height: "calc(100% - 12px)",
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
-          />
-        </motion.div>
-
-        {/* Greeting */}
-        <h1
-          style={{
-            color: "var(--accent-color)",
-            fontSize: "clamp(1.5rem, 5vw, 2.2rem)",
-            marginBottom: "4px",
-          }}
-        >
+        <img src={chovirico} alt="Porquinho" className="avatar" />
+        <div className="topo-texto">
           <SplitText
-            text="Olá miminha"
-            className="font-display"
-            delay={100}
-            duration={0.6}
+            text="Olá, miminha"
+            tag="h1"
+            className="topo-titulo"
+            textAlign="left"
+            delay={45}
+            duration={0.5}
+            from={{ opacity: 0, y: 16 }}
           />
-        </h1>
-        <p
-          style={{
-            color: "var(--text-secondary)",
-            fontSize: "clamp(0.9rem, 2.5vw, 1.1rem)",
-            fontWeight: 500,
-            margin: 0,
-          }}
-        >
-          Te amo muito, meu amor! 🐖
-        </p>
+          <p className="topo-sub">Te amo muito, meu amor 🐖</p>
+        </div>
+        <div className="topo-acoes">
+          <ThemeToggle />
+          <button type="button" className="icon-btn" onClick={logout} aria-label="Sair">
+            <LogOut size={18} strokeWidth={1.75} />
+          </button>
+        </div>
       </motion.header>
 
       {/* ─────── Tabs + Content ─────── */}
       <Tabs
         tabs={[
-          { id: "dashboard", label: "Dashboard", icon: "🏠" },
-          { id: "historico", label: "Histórico", icon: "📊" },
-          { id: "estatisticas", label: "Estatísticas", icon: "📈" },
+          { id: "dashboard", label: "Início" },
+          { id: "historico", label: "Histórico" },
+          { id: "estatisticas", label: "Crescimento" },
         ]}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       >
         {activeTab === "dashboard" && (
-          <div>
-            <motion.div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "16px",
-              }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.4 }}
-            >
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1, duration: 0.4 }}
-              >
-                <SaldoAtual
-                  saldoAtual={saldoAtual}
-                  setSaldoAtual={setSaldoAtual}
-                  saldoAnterior={saldoAnterior}
-                  setSaldoAnterior={setSaldoAnterior}
-                  dataAtual={dataAtual}
-                  setDataAtual={setDataAtual}
-                  setDataAnterior={setDataAnterior}
-                  setHistorico={setHistorico}
-                  mostrar={mostrar}
-                  setMostrar={setMostrar}
-                />
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.4 }}
-              >
-                <SaldoAnterior
-                  saldoAnterior={saldoAnterior}
-                  dataAnterior={dataAnterior}
-                  mostrar={mostrar}
-                />
-              </motion.div>
-            </motion.div>
+          <div className="pilha">
+            <SaldoAtual
+              saldoAtual={saldoAtual}
+              saldoAnterior={saldoAnterior}
+              dataAtual={dataAtual}
+              dataAnterior={dataAnterior}
+              onAtualizar={atualizarSaldo}
+              mostrar={mostrar}
+              setMostrar={setMostrar}
+            />
+
+            {recentes.length > 0 && (
+              <section aria-labelledby="recentes-titulo">
+                <div className="secao-topo">
+                  <h2 id="recentes-titulo" className="secao-titulo">
+                    Últimos lançamentos
+                  </h2>
+                  <button
+                    type="button"
+                    className="btn-text"
+                    onClick={() => setActiveTab("historico")}
+                  >
+                    Ver tudo
+                  </button>
+                </div>
+                <ul className="lista">
+                  {recentes.map((item) => (
+                    <Lancamento
+                      key={item.id}
+                      item={item}
+                      mostrar={mostrar}
+                      onCancelar={cancelarLancamento}
+                    />
+                  ))}
+                </ul>
+              </section>
+            )}
           </div>
         )}
 
@@ -394,7 +270,7 @@ function AppContent() {
           <HistoricoDeValores
             historico={historico}
             mostrar={mostrar}
-            saldoAtual={saldoAtual}
+            onCancelar={cancelarLancamento}
           />
         )}
 
@@ -407,49 +283,16 @@ function AppContent() {
         )}
       </Tabs>
 
-      {/* ─────── Footer (desktop only) ─────── */}
-      <motion.footer
-        className="d-none d-md-block"
-        style={{
-          marginTop: "32px",
-          padding: "20px 0",
-          borderTop: "1px solid var(--border-color)",
-          textAlign: "center",
-        }}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6, duration: 0.4 }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            color: "var(--text-muted)",
-            fontSize: "0.8rem",
-            fontWeight: 500,
-          }}
-        >
-          <span>© 2025 Mimo Finanças</span>
-          <span>V0.2.0</span>
-          <span>
-            Desenvolvido por{" "}
-            <a
-              href="https://github.com/MauricioSts"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                color: "var(--accent-color)",
-                textDecoration: "none",
-                fontWeight: 600,
-              }}
-            >
-              Mauricio
-            </a>
-          </span>
-        </div>
-      </motion.footer>
-    </motion.div>
+      <footer className="rodape">
+        <span>Mimo Finanças · v0.3.0</span>
+        <span>
+          Feito por{" "}
+          <a href="https://github.com/MauricioSts" target="_blank" rel="noopener noreferrer">
+            Mauricio
+          </a>
+        </span>
+      </footer>
+    </div>
   );
 }
 
