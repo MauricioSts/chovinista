@@ -251,6 +251,7 @@ function AppContent() {
                     Ver tudo
                   </button>
                 </div>
+                <p className="secao-sub">Arraste um pro lado pra cancelar</p>
                 <ul className="lista">
                   {recentes.map((item) => (
                     <Lancamento

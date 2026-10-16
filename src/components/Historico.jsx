@@ -59,8 +59,8 @@ function HistoricoDeValores({ historico, mostrar, onCancelar }) {
 
       <p className="secao-sub">
         {historico.length}{" "}
-        {historico.length === 1 ? "lançamento" : "lançamentos"} · toque no ✕
-        para cancelar um
+        {historico.length === 1 ? "lançamento" : "lançamentos"} · arraste um pro
+        lado pra cancelar
       </p>
 
       <AnimatePresence mode="wait">

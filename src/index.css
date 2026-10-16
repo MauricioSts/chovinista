@@ -526,6 +526,51 @@ a {
   padding: 6px 16px;
 }
 
+.lancamento-swipe {
+  position: relative;
+  overflow: hidden;
+}
+
+.lancamento-fundo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-right: 20px;
+  background: var(--neg-soft);
+  color: var(--neg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.lancamento-fundo.is-armed {
+  background: var(--neg);
+  color: #fff;
+}
+
+[data-theme="dark"] .lancamento-fundo.is-armed {
+  color: #2a1210;
+}
+
+.lancamento-view {
+  position: relative;
+  background: var(--surface);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.lancamento-view:active {
+  cursor: grabbing;
+}
+
+.lancamento-view:focus-visible {
+  outline-offset: -2px;
+}
+
 .lancamento-valor {
   flex: 1;
   font-weight: 600;

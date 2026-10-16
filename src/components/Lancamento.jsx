@@ -1,11 +1,23 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { Trash2 } from "lucide-react";
 import { formatBRL } from "../utils/format";
 
-// Linha de um lançamento com cancelamento em dois toques (sem modal)
+// Quanto arrastar pra esquerda até soltar e pedir a confirmação
+const LIMIAR = 88;
+
+// Cancelamento em duas etapas: 1) arrastar pro lado, 2) confirmar na própria linha
 function Lancamento({ item, mostrar, onCancelar, delay = 0 }) {
   const [confirmando, setConfirmando] = useState(false);
+  const x = useMotionValue(0);
+  const fundoOpacity = useTransform(x, [-LIMIAR, -16, 0], [1, 0.4, 0]);
+  const iconeScale = useTransform(x, [-LIMIAR - 20, -LIMIAR, -24], [1.15, 1, 0.7]);
+  const [armado, setArmado] = useState(false);
+
+  function pedirConfirmacao() {
+    navigator.vibrate?.(12);
+    setConfirmando(true);
+  }
 
   return (
     <motion.li
@@ -13,7 +25,7 @@ function Lancamento({ item, mostrar, onCancelar, delay = 0 }) {
       layout
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, x: -24, transition: { duration: 0.2 } }}
+      exit={{ opacity: 0, x: -48, transition: { duration: 0.2 } }}
       transition={{ delay, duration: 0.25 }}
     >
       <AnimatePresence mode="wait" initial={false}>
@@ -34,6 +46,7 @@ function Lancamento({ item, mostrar, onCancelar, delay = 0 }) {
                 type="button"
                 className="btn-text"
                 onClick={() => setConfirmando(false)}
+                autoFocus
               >
                 Manter
               </button>
@@ -49,26 +62,56 @@ function Lancamento({ item, mostrar, onCancelar, delay = 0 }) {
         ) : (
           <motion.div
             key="view"
-            className="lancamento-view"
+            className="lancamento-swipe"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
           >
-            <span className="lancamento-valor num">
-              {formatBRL(item.valor, mostrar)}
-            </span>
-            <span className="lancamento-data">{item.data}</span>
             {onCancelar && (
-              <button
-                type="button"
-                className="icon-btn icon-btn-sm"
-                aria-label={`Cancelar lançamento de ${item.data}`}
-                onClick={() => setConfirmando(true)}
+              <motion.div
+                className={`lancamento-fundo ${armado ? "is-armed" : ""}`}
+                style={{ opacity: fundoOpacity }}
+                aria-hidden="true"
               >
-                <X size={16} strokeWidth={1.75} />
-              </button>
+                <motion.span style={{ scale: iconeScale }}>
+                  <Trash2 size={18} strokeWidth={1.75} />
+                </motion.span>
+                <span>{armado ? "Solte" : "Cancelar"}</span>
+              </motion.div>
             )}
+
+            <motion.div
+              className="lancamento-view"
+              style={{ x, touchAction: "pan-y" }}
+              drag={onCancelar ? "x" : false}
+              dragDirectionLock
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={{ left: 0.7, right: 0.05 }}
+              dragSnapToOrigin
+              onDrag={(_, info) => setArmado(info.offset.x <= -LIMIAR)}
+              onDragEnd={(_, info) => {
+                setArmado(false);
+                if (info.offset.x <= -LIMIAR) pedirConfirmacao();
+              }}
+              tabIndex={onCancelar ? 0 : undefined}
+              aria-label={
+                onCancelar
+                  ? `${formatBRL(item.valor, mostrar)} em ${item.data}. Arraste pra esquerda ou aperte Delete pra cancelar`
+                  : undefined
+              }
+              onKeyDown={(e) => {
+                if (onCancelar && (e.key === "Delete" || e.key === "Backspace")) {
+                  e.preventDefault();
+                  pedirConfirmacao();
+                }
+              }}
+            >
+              <span className="lancamento-valor num">
+                {formatBRL(item.valor, mostrar)}
+              </span>
+              <span className="lancamento-data">{item.data}</span>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
