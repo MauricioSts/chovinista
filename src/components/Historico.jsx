@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, PiggyBank } from "lucide-react";
 import Lancamento from "./Lancamento";
 import { formatBRL, formatSigned } from "../utils/format";
+import { agruparPorMes } from "../utils/meses";
 
 const MESES = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
@@ -12,21 +13,7 @@ const MESES = [
 function HistoricoDeValores({ historico, mostrar, onCancelar }) {
   const [viewMode, setViewMode] = useState("monthly"); // "monthly" | "all"
 
-  // Agrupa por mês (MM/YYYY); historico vem do mais novo pro mais antigo
-  const historicoMensal = useMemo(() => {
-    const groups = {};
-    historico.forEach((item) => {
-      const parts = item.data.split("/");
-      const mesAno = parts.length >= 3 ? `${parts[1]}/${parts[2]}` : item.data;
-      if (!groups[mesAno]) groups[mesAno] = { mesAno, items: [] };
-      groups[mesAno].items.push(item);
-    });
-    return Object.values(groups).sort((a, b) => {
-      const [mA, yA] = a.mesAno.split("/").map(Number);
-      const [mB, yB] = b.mesAno.split("/").map(Number);
-      return yB - yA || mB - mA;
-    });
-  }, [historico]);
+  const historicoMensal = useMemo(() => agruparPorMes(historico), [historico]);
 
   const formatMesAno = (mesAno) => {
     const [mes, ano] = mesAno.split("/");
@@ -125,9 +112,7 @@ function HistoricoDeValores({ historico, mostrar, onCancelar }) {
 function MonthGroup({ group, label, mostrar, onCancelar, inicialAberto }) {
   const [expanded, setExpanded] = useState(inicialAberto);
 
-  const ultimo = group.items[0];
-  const primeiro = group.items[group.items.length - 1];
-  const variacao = ultimo.valor - primeiro.valor;
+  const { fechamento, variacao } = group;
   const count = group.items.length;
 
   return (
@@ -145,12 +130,10 @@ function MonthGroup({ group, label, mostrar, onCancelar, inicialAberto }) {
           </span>
         </span>
         <span className="mes-valores">
-          <span className="num">{formatBRL(ultimo.valor, mostrar)}</span>
-          {count > 1 && (
-            <span className={`num mes-var ${variacao >= 0 ? "is-pos" : "is-neg"}`}>
-              {formatSigned(variacao, mostrar)}
-            </span>
-          )}
+          <span className="num">{formatBRL(fechamento, mostrar)}</span>
+          <span className={`num mes-var ${variacao >= 0 ? "is-pos" : "is-neg"}`}>
+            {formatSigned(variacao, mostrar)}
+          </span>
         </span>
         <ChevronDown className="mes-chevron" size={18} strokeWidth={1.75} />
       </button>
