@@ -780,6 +780,74 @@ a {
   font-weight: 600;
 }
 
+.previsao-card {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: 0 0 0 1px var(--line), var(--shadow-sm);
+}
+
+.previsao-ritmo {
+  margin-top: 6px;
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+
+.previsao-ritmo strong,
+.previsao-final strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.previsao-metas {
+  list-style: none;
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.previsao-metas li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  border-bottom: 1px solid var(--line);
+  color: var(--accent);
+}
+
+.previsao-alvo {
+  flex: 1;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.previsao-quando {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.previsao-dias {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.previsao-final {
+  margin-top: 12px;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+
+.previsao-nota {
+  margin-top: 8px;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+
 .barras-card {
   margin-top: 12px;
   padding: 16px 16px 12px;

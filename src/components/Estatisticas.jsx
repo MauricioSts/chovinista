@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { ArrowUpRight, ArrowDownRight, BarChart3 } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, BarChart3, Flag } from "lucide-react";
 import { formatBRL, formatSigned } from "../utils/format";
+import { preverSaldo } from "../utils/previsao";
 
 const MESES_CURTOS = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
 
@@ -53,6 +54,7 @@ function Estatisticas({ historico, saldoAtual, mostrar }) {
   });
   const barras = Object.values(grupos).sort((a, b) => a.ano - b.ano || a.mes - b.mes);
   const maxVal = Math.max(...barras.map((b) => b.valor), 1);
+  const previsao = preverSaldo(historico, saldoAtual);
 
   return (
     <section aria-labelledby="stats-titulo">
@@ -95,6 +97,54 @@ function Estatisticas({ historico, saldoAtual, mostrar }) {
           <dd className="num">{barras.length}</dd>
         </div>
       </dl>
+
+      {previsao && (
+        <div className="previsao-card">
+          <span className="eyebrow">Previsão · próximos 12 meses</span>
+          {previsao.porMes > 0 ? (
+            <>
+              <p className="previsao-ritmo">
+                Guardando <strong className="num">{formatBRL(previsao.porMes, mostrar)}</strong> por mês,
+                como até agora:
+              </p>
+              {previsao.metas.length > 0 ? (
+                <ol className="previsao-metas">
+                  {previsao.metas.map((m) => (
+                    <li key={m.alvo}>
+                      <Flag size={16} strokeWidth={1.75} />
+                      <span className="num previsao-alvo">{formatBRL(m.alvo, mostrar)}</span>
+                      <span className="previsao-quando">
+                        {MESES_CURTOS[m.data.getMonth()]}/{m.data.getFullYear()}
+                        <span className="previsao-dias num">
+                          {m.diasAte <= 45
+                            ? `${m.diasAte} ${m.diasAte === 1 ? "dia" : "dias"}`
+                            : `~${Math.round(m.diasAte / 30.44)} meses`}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                previsao.proximaForaDoAno && (
+                  <p className="previsao-nota">
+                    {formatBRL(previsao.proximaForaDoAno.alvo, mostrar)} só em{" "}
+                    {MESES_CURTOS[previsao.proximaForaDoAno.data.getMonth()]}/
+                    {previsao.proximaForaDoAno.data.getFullYear()}.
+                  </p>
+                )
+              )}
+              <p className="previsao-final">
+                Daqui a 1 ano ({previsao.fimDoAno.toLocaleDateString("pt-BR")}):{" "}
+                <strong className="num">~{formatBRL(previsao.emUmAno, mostrar)}</strong>
+              </p>
+            </>
+          ) : (
+            <p className="previsao-nota">
+              O saldo não cresceu desde o começo, então ainda não dá pra prever as próximas metas.
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="barras-card">
         <span className="eyebrow">Fim de cada mês</span>
