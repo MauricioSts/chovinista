@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
-import { Trash2 } from "lucide-react";
+import { Trash } from "@phosphor-icons/react";
 import { formatBRL } from "../utils/format";
 
 // Quanto arrastar pra esquerda até soltar e pedir a confirmação
@@ -75,7 +75,7 @@ function Lancamento({ item, mostrar, onCancelar, delay = 0 }) {
                 aria-hidden="true"
               >
                 <motion.span style={{ scale: iconeScale }}>
-                  <Trash2 size={18} strokeWidth={1.75} />
+                  <Trash size={18} />
                 </motion.span>
                 <span>{armado ? "Solte" : "Cancelar"}</span>
               </motion.div>

@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { LogOut } from "lucide-react";
+import { IconContext, SignOut } from "@phosphor-icons/react";
 import SaldoAtual from "./components/MoneyAtual";
+import SaldoAnterior from "./components/SaldoAnterior";
 import Lancamento from "./components/Lancamento";
 import HistoricoDeValores from "./components/Historico";
 import Estatisticas from "./components/Estatisticas";
@@ -19,6 +20,8 @@ import SplitText from "./components/SplitText";
 const novoId = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
 
+const EASE = [0.32, 0.72, 0, 1];
+
 /* ─── Auth Guard ─── */
 function AuthGuard() {
   const { user, loading: authLoading } = useAuth();
@@ -31,13 +34,13 @@ function AuthGuard() {
 function TelaCarregando({ texto }) {
   return (
     <div className="carregando" role="status">
-      <motion.img
-        src={chovirico}
-        alt=""
-        className="avatar avatar-lg"
+      <motion.div
+        className="avatar-anel avatar-anel-lg"
         animate={{ rotate: [0, 8, 0, -8, 0], scale: [1, 1.04, 0.98, 1.04, 1] }}
         transition={{ duration: 1.4, repeat: Infinity, ease: "easeInOut" }}
-      />
+      >
+        <img src={chovirico} alt="" className="avatar" />
+      </motion.div>
       {texto && <p>{texto}</p>}
     </div>
   );
@@ -156,7 +159,7 @@ function AppContent() {
     toast(
       (t) => (
         <span className="toast-desfazer">
-          Saldo atualizado
+          Saldo atualizado 🐖
           <button
             type="button"
             onClick={() => {
@@ -172,7 +175,7 @@ function AppContent() {
     );
   }
 
-  if (carregando) return <TelaCarregando texto="Contando as moedinhas…" />;
+  if (carregando) return <TelaCarregando texto="Carregando seus dados, miminha… 🐖" />;
 
   const recentes = historico.slice(0, 3);
 
@@ -188,59 +191,95 @@ function AppContent() {
       />
 
       {/* ─────── Header ─────── */}
-      <motion.header
-        className="topo"
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-      >
-        <img src={chovirico} alt="Porquinho" className="avatar" />
-        <div className="topo-texto">
-          <SplitText
-            text="Olá, miminha"
-            tag="h1"
-            className="topo-titulo"
-            textAlign="left"
-            delay={45}
-            duration={0.5}
-            from={{ opacity: 0, y: 16 }}
-          />
-          <p className="topo-sub">Te amo muito, meu amor 🐖</p>
-        </div>
-        <div className="topo-acoes">
+      <header className="topo">
+        <motion.div
+          className="topo-acoes"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3, duration: 0.4, ease: EASE }}
+        >
           <ThemeToggle />
           <button type="button" className="icon-btn" onClick={logout} aria-label="Sair">
-            <LogOut size={18} strokeWidth={1.75} />
+            <SignOut size={18} />
           </button>
-        </div>
-      </motion.header>
+        </motion.div>
+
+        <motion.div
+          className="avatar-anel"
+          initial={{ opacity: 0, scale: 0.85 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: EASE }}
+          whileHover={{ rotate: [0, -5, 5, 0], transition: { duration: 0.4 } }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <img src={chovirico} alt="Porquinho do Chovinista" className="avatar" />
+        </motion.div>
+
+        <SplitText
+          text="Olá miminha"
+          tag="h1"
+          className="topo-titulo"
+          delay={60}
+          duration={0.6}
+        />
+        <motion.p
+          className="topo-sub"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.5, ease: EASE }}
+        >
+          Te amo muito, meu amor! 🐖
+        </motion.p>
+      </header>
 
       {/* ─────── Tabs + Content ─────── */}
       <Tabs
         tabs={[
-          { id: "dashboard", label: "Início" },
+          { id: "dashboard", label: "Dashboard" },
           { id: "historico", label: "Histórico" },
-          { id: "estatisticas", label: "Crescimento" },
+          { id: "estatisticas", label: "Estatísticas" },
         ]}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       >
         {activeTab === "dashboard" && (
           <div className="pilha">
-            <SaldoAtual
-              saldoAtual={saldoAtual}
-              saldoAnterior={saldoAnterior}
-              dataAtual={dataAtual}
-              dataAnterior={dataAnterior}
-              onAtualizar={atualizarSaldo}
-              mostrar={mostrar}
-              setMostrar={setMostrar}
-            />
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05, duration: 0.5, ease: EASE }}
+            >
+              <SaldoAtual
+                saldoAtual={saldoAtual}
+                saldoAnterior={saldoAnterior}
+                dataAtual={dataAtual}
+                onAtualizar={atualizarSaldo}
+                mostrar={mostrar}
+                setMostrar={setMostrar}
+              />
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.12, duration: 0.5, ease: EASE }}
+            >
+              <SaldoAnterior
+                saldoAnterior={saldoAnterior}
+                dataAnterior={dataAnterior}
+                mostrar={mostrar}
+              />
+            </motion.div>
 
             {recentes.length > 0 && (
-              <section aria-labelledby="recentes-titulo">
-                <div className="secao-topo">
-                  <h2 id="recentes-titulo" className="secao-titulo">
+              <motion.section
+                aria-labelledby="recentes-titulo"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.19, duration: 0.5, ease: EASE }}
+              >
+                <div className="lista-topo">
+                  <h2 id="recentes-titulo" className="rotulo">
                     Últimos lançamentos
                   </h2>
                   <button
@@ -251,7 +290,6 @@ function AppContent() {
                     Ver tudo
                   </button>
                 </div>
-                <p className="secao-sub">Arraste um pro lado pra cancelar</p>
                 <ul className="lista">
                   {recentes.map((item) => (
                     <Lancamento
@@ -262,7 +300,8 @@ function AppContent() {
                     />
                   ))}
                 </ul>
-              </section>
+                <p className="dica">Arraste um lançamento pro lado pra cancelar</p>
+              </motion.section>
             )}
           </div>
         )}
@@ -271,6 +310,7 @@ function AppContent() {
           <HistoricoDeValores
             historico={historico}
             mostrar={mostrar}
+            saldoAtual={saldoAtual}
             onCancelar={cancelarLancamento}
           />
         )}
@@ -285,7 +325,8 @@ function AppContent() {
       </Tabs>
 
       <footer className="rodape">
-        <span>Mimo Finanças · v0.3.0</span>
+        <span>© 2025 Mimo Finanças</span>
+        <span>v0.3.0</span>
         <span>
           Feito por{" "}
           <a href="https://github.com/MauricioSts" target="_blank" rel="noopener noreferrer">
@@ -300,11 +341,13 @@ function AppContent() {
 /* ─── Root App ─── */
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <AuthGuard />
-      </AuthProvider>
-    </ThemeProvider>
+    <IconContext.Provider value={{ weight: "light" }}>
+      <ThemeProvider>
+        <AuthProvider>
+          <AuthGuard />
+        </AuthProvider>
+      </ThemeProvider>
+    </IconContext.Provider>
   );
 }
 

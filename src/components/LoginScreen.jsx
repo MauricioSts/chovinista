@@ -13,16 +13,16 @@ function LoginScreen() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, ease: [0.2, 0.8, 0.2, 1] }}
       >
-        <motion.img
-          src={chovirico}
-          alt="Porquinho do Chovinista"
-          className="avatar avatar-lg"
+        <motion.div
+          className="avatar-anel avatar-anel-lg"
           animate={{ rotate: [0, 4, 0, -4, 0] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-        />
+        >
+          <img src={chovirico} alt="Porquinho do Chovinista" className="avatar" />
+        </motion.div>
 
         <h1 className="login-titulo">Chovinista</h1>
-        <p className="login-sub">O cofrinho da miminha. Entre pra ver como ele está.</p>
+        <p className="login-sub">Faça login para continuar 🐖</p>
 
         {authError && (
           <p className="login-erro" role="alert">

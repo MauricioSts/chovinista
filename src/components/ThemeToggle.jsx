@@ -1,4 +1,4 @@
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon } from "@phosphor-icons/react";
 import { useTheme } from "../contexts/ThemeContext";
 
 const ThemeToggle = () => {
@@ -13,7 +13,7 @@ const ThemeToggle = () => {
       aria-label={isDark ? "Usar tema claro" : "Usar tema escuro"}
       title={isDark ? "Tema claro" : "Tema escuro"}
     >
-      <Icon size={18} strokeWidth={1.75} />
+      <Icon size={18} />
     </button>
   );
 };
